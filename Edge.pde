@@ -22,10 +22,6 @@ class Edge {
 
     this.checked = false;
 
-
-
-
-
     //fix underscores
     if (fn.contains("_")) {
       String[] splitted = split(fn, "_");
@@ -45,12 +41,7 @@ class Edge {
       this.parentEdges = new int[levelLimit-this.level+1];
       for (int i = 0; i < levelLimit - level + 1; i++) {
         this.parentEdges[i] = resultsTracker[i];
-      }
-      print("Edge " + this.finalName + " : ");
-      for (int i = 0; i < this.parentEdges.length; i++) {
-        print(parentEdges[i] + ", ");
-      }
-      println();
+      }      
     }
   }
 }

@@ -1,5 +1,5 @@
-final int edgeLimit = 3;
-final int levelLimit = 8;
+final int edgeLimit = 10;
+final int levelLimit = 5;
 final String path = "http://conceptnet5.media.mit.edu/data/5.2";
 
 final String REL_IS_A = "/r/IsA";
@@ -43,23 +43,23 @@ void setup() {
   //  }
 
   //CHECK SUCCESSES
-  print("\n");
+  println();
   println("number of successes = " + successEdges.size());
-  for (int i = 0; i < successEdges.size (); i++) {
-    Edge thisEdge = successEdges.get(i);
-    if (thisEdge.parentEdges != null) {
-      println("edge tracking length: " + thisEdge.parentEdges.length);
-      for (int j = 0; j < thisEdge.parentEdges.length; j++) {
-        Edge[] tempEdge = getSomeEdgeOf(false, "", "", chosenStart, 1, thisEdge.parentEdges[j], 1);
-        if (tempEdge[0] != null) {
-          print(tempEdge[0].finalPath + " -- ");
-        }
-        print(thisEdge.parentEdges[j] + " -> ");
-      }
-      println("final edge name: " + thisEdge.finalName);
-      println();
-    }
-  }
+  //  for (int i = 0; i < successEdges.size (); i++) {
+  //    Edge thisEdge = successEdges.get(i);
+  //    if (thisEdge.parentEdges != null) {
+  //      println("edge tracking length: " + thisEdge.parentEdges.length);
+  //      for (int j = 0; j < thisEdge.parentEdges.length; j++) {
+  //        Edge[] tempEdge = getSomeEdgeOf(false, "", "", chosenStart, 1, thisEdge.parentEdges[j], 1);
+  //        if (tempEdge[0] != null) {
+  //          print(tempEdge[0].finalPath + " -- ");
+  //        }
+  //        print(thisEdge.parentEdges[j] + " -> ");
+  //      }
+  //      println("final edge name: " + thisEdge.finalName);
+  //      println();
+  //    }
+  //  }
 } 
 
 public void recurseCheck(int level, String conceptPath) { 
@@ -68,19 +68,29 @@ public void recurseCheck(int level, String conceptPath) {
     for (int i = 0; i < results.length; i++) {
       int l = levelLimit - level;
       resultsTracker[l] = i;
-      
-      print("resultsTracker:  ");
-      for (int j = 0; j < resultsTracker.length; j++) {
-        print(resultsTracker[j] + ", ");
+
+      print("Edge: '" + results[i].finalName + "':  ");
+      if (results[i].parentEdges != null) {
+        for (int j = 0; j < results[i].parentEdges.length; j++) {
+          //Edge yetAnotherTempEdge = results[i];
+          //print(yetAnotherTempEdge.parentEdges[j] + ", ");
+          print(results[i].parentEdges[j] + ", ");
+        }
+        println();
       }
-      println();
-      
+
+      //      print("resultsTracker:  ");
+      //      for (int j = 0; j < resultsTracker.length; j++) {
+      //        print(resultsTracker[j] + ",  ");
+      //      }
+      //      println();
+
       //!!!!!!!!!!!
       //IF i want to include more successes, this 'already checked' situation is a little problematic...
       //!!!!!!!!!!!
       for (int j = 0; j < alreadyChecked.length; j++) {
         if (alreadyChecked[j].equals(results[i].finalPath)) {
-          //println("already checked " + results[i].finalPath);
+          println("already checked " + results[i].finalPath);
           results[i].checked = true;
         }
         if (results[i].finalPath.length() > 38) { //cull large concepts
