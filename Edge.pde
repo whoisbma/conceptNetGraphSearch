@@ -19,15 +19,12 @@ class Edge {
     this.end = e;
     this.rel = r;
     this.level = l; 
-    
+
     this.checked = false;
 
-    if (level < levelLimit) { 
-      this.parentEdges = new int[levelLimit-level+1];
-      for (int i = 0; i < levelLimit - level + 1; i++) {
-        this.parentEdges[i] = resultsTracker[i];
-      }
-    }
+
+
+
 
     //fix underscores
     if (fn.contains("_")) {
@@ -43,7 +40,18 @@ class Edge {
       this.finalName = fn;
     }
     this.finalPath = fp;
-  }
 
+    if (this.level < levelLimit) { 
+      this.parentEdges = new int[levelLimit-this.level+1];
+      for (int i = 0; i < levelLimit - level + 1; i++) {
+        this.parentEdges[i] = resultsTracker[i];
+      }
+      print("Edge " + this.finalName + " : ");
+      for (int i = 0; i < this.parentEdges.length; i++) {
+        print(parentEdges[i] + ", ");
+      }
+      println();
+    }
+  }
 }
 
