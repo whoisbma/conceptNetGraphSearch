@@ -1,5 +1,5 @@
 final int edgeLimit = 5;
-final int levelLimit = 7;
+final int levelLimit = 10;
 final String path = "http://conceptnet5.media.mit.edu/data/5.2";
 
 final String REL_IS_A = "/r/IsA";
@@ -38,27 +38,27 @@ void setup() {
   recurseCheck(levelLimit, chosenStart);
 
   println("number of checks = " + alreadyChecked.length);
-  for (int i = 0; i < alreadyChecked.length; i++) {
-    print(alreadyChecked[i]+ " -- ");
-  }
+//  for (int i = 0; i < alreadyChecked.length; i++) {
+//    print(alreadyChecked[i]+ " -- ");
+//  }
 
   //CHECK SUCCESSES
+  print("\n");
   println("number of successes = " + successEdges.size());
   for (int i = 0; i < successEdges.size (); i++) {
     Edge thisEdge = successEdges.get(i);
-    //println(thisEdge.finalName);
-    //    if (thisEdge.parentEdges != null) {
-    //      //println(thisEdge.parentEdges.length);
-    //      for (int j = 0; j < thisEdge.parentEdges.length; j++) {
-    //        Edge[] tempEdge = getSomeEdgeOf(false, "", "", chosenStart, 1, thisEdge.parentEdges[j], 1);
-    //        if (tempEdge[0] != null) {
-    //          //print(tempEdge[0].finalName + " -- ");
-    //        }
-    //          //print(thisEdge.parentEdges[j] + " -> ");
-    //      }
-    //      //println(thisEdge.finalName);
-    //      //println();
-    //    }
+    if (thisEdge.parentEdges != null) {
+      println("edge tracking length: " + thisEdge.parentEdges.length);
+      //      for (int j = 0; j < thisEdge.parentEdges.length; j++) {
+      //        Edge[] tempEdge = getSomeEdgeOf(false, "", "", chosenStart, 1, thisEdge.parentEdges[j], 1);
+      //        if (tempEdge[0] != null) {
+      //          //print(tempEdge[0].finalName + " -- ");
+      //        }
+      //          //print(thisEdge.parentEdges[j] + " -> ");
+      //      }
+      println("final edge name: " + thisEdge.finalName);
+      //      //println();
+    }
   }
 } 
 
@@ -66,20 +66,21 @@ public void recurseCheck(int level, String conceptPath) {
   Edge[] results = getSomeEdgeOf(false, "", "", conceptPath, edgeLimit, 0, level);
   if (results != null) {
     for (int i = 0; i < results.length; i++) {
-      //boolean checkedTrue = false;
       int l = levelLimit - level;
       resultsTracker[l] = i;
 
       for (int j = 0; j < alreadyChecked.length; j++) {
         if (alreadyChecked[j].equals(results[i].finalPath)) {
-          println("already checked " + results[i].finalPath);
-          //checkedTrue = true; 
+          //println("already checked " + results[i].finalPath);
+          results[i].checked = true;
+        }
+        if (results[i].finalPath.length() > 38) { //cull large concepts
           results[i].checked = true;
         }
       }
 
       if (results[i].checked == false && results[i].finalPath.contains("c/en/")) { 
-        println("checked false");
+        //println("checked false");
 
         //add to already checked
         String[] newChecked = new String[alreadyChecked.length+1];
@@ -92,12 +93,13 @@ public void recurseCheck(int level, String conceptPath) {
         alreadyChecked = newChecked;
 
         if (results[i].finalPath.contains(TARGET)) {
-          //        successEdges.add(results[i]);
-          println("SUCCESS at " + results[i].finalName);
+          //if (results[i].parentEdges.length == levelLimit) {   //IMPORTANT!!! last level only?
+            successEdges.add(results[i]);
+            println("SUCCESS at " + results[i].finalName);
+          //}
         } else { 
-          //println("not found at " + results[i].finalName);
+          println("not found at " + results[i].finalName);
         }
-        
       }
     }
 
