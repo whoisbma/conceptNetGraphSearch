@@ -68,8 +68,15 @@ public void recurseCheck(int level, String conceptPath) {
     for (int i = 0; i < results.length; i++) {
       int l = levelLimit - level;
       resultsTracker[l] = i;
+      results[i].updateParents();
 
-      print("Edge: '" + results[i].finalName + "':  ");
+      print("RESULTS TRACKER:  ");
+      for (int j = 0; j < resultsTracker.length; j++) {
+        print(resultsTracker[j] + ",  ");
+      }
+      println();
+
+      print("EDGE: '" + results[i].finalName + "':  ");
       if (results[i].parentEdges != null) {
         for (int j = 0; j < results[i].parentEdges.length; j++) {
           //Edge yetAnotherTempEdge = results[i];
@@ -79,11 +86,7 @@ public void recurseCheck(int level, String conceptPath) {
         println();
       }
 
-      //      print("resultsTracker:  ");
-      //      for (int j = 0; j < resultsTracker.length; j++) {
-      //        print(resultsTracker[j] + ",  ");
-      //      }
-      //      println();
+
 
       //!!!!!!!!!!!
       //IF i want to include more successes, this 'already checked' situation is a little problematic...
