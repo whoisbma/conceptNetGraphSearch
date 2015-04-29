@@ -1,5 +1,5 @@
 final int edgeLimit = 5;
-final int levelLimit = 6;
+final int levelLimit = 7;
 final String path = "http://conceptnet5.media.mit.edu/data/5.2";
 
 final String REL_IS_A = "/r/IsA";
@@ -66,18 +66,19 @@ public void recurseCheck(int level, String conceptPath) {
   Edge[] results = getSomeEdgeOf(false, "", "", conceptPath, edgeLimit, 0, level);
   if (results != null) {
     for (int i = 0; i < results.length; i++) {
-      boolean checkedTrue = false;
+      //boolean checkedTrue = false;
       int l = levelLimit - level;
       resultsTracker[l] = i;
 
       for (int j = 0; j < alreadyChecked.length; j++) {
         if (alreadyChecked[j].equals(results[i].finalPath)) {
           println("already checked " + results[i].finalPath);
-          checkedTrue = true; 
+          //checkedTrue = true; 
+          results[i].checked = true;
         }
       }
 
-      if (checkedTrue == false && results[i].finalPath.contains("c/en/")) { 
+      if (results[i].checked == false && results[i].finalPath.contains("c/en/")) { 
         println("checked false");
 
         //add to already checked
@@ -99,11 +100,13 @@ public void recurseCheck(int level, String conceptPath) {
         
       }
     }
-    //still recursing here... how to make sure that
+
     if (level > 1) {
       level--;
       for (int i = 0; i < results.length; i++) {
-        recurseCheck(level, results[i].finalPath);
+        if (results[i].checked == false) {
+          recurseCheck(level, results[i].finalPath);
+        }
       }
     }
   }

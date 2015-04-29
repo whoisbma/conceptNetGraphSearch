@@ -10,6 +10,7 @@ class Edge {
   public int level; 
   public int parentEdges[]; 
 
+  public boolean checked;
 
   public Edge(String sl, String el, String s, String e, String r, String fn, String fp, int l) { 
     this.startLemmas = sl;
@@ -18,6 +19,8 @@ class Edge {
     this.end = e;
     this.rel = r;
     this.level = l; 
+    
+    this.checked = false;
 
     if (level < levelLimit) { 
       this.parentEdges = new int[levelLimit-level+1];
