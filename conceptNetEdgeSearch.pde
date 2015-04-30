@@ -1,5 +1,5 @@
-final int edgeLimit = 7;
-final int levelLimit = 7;
+final int edgeLimit = 10;
+final int levelLimit = 11;
 final String path = "http://conceptnet5.media.mit.edu/data/5.2";
 
 final String REL_IS_A = "/r/IsA";
@@ -25,7 +25,7 @@ void setup() {
   frameRate(30);
   successEdges = new ArrayList<Edge>(); 
 
-  Edge[] personGroup = getPersonGroup(0,10,100);
+  Edge[] personGroup = getPersonGroup(0, 10, 10);
 
   int whichPerson = (int)random(personGroup.length);
   println("Chosen person is " + personGroup[whichPerson].finalName);
@@ -62,9 +62,11 @@ void setup() {
   for (int i = 0; i < successEdges.size (); i++) {
     Edge thisEdge = successEdges.get(i);
     print("person - ");
-    for (int j = 0; j < thisEdge.parentEdgeStrings.length; j++) {
-      print(thisEdge.parentEdgeStrings[j] + " - ");
-      //print(thisEdge.parentEdgeRelStrings[j] + " ---> ");
+    if (thisEdge != null) {
+      for (int j = 0; j < thisEdge.parentEdgeStrings.length; j++) {
+        print(thisEdge.parentEdgeStrings[j] + " - ");
+        //print(thisEdge.parentEdgeRelStrings[j] + " ---> ");
+      }
     }
     print("money");
     println();
@@ -99,16 +101,16 @@ public void recurseCheck(int level, String conceptPath) {
       //      }
       //      println();
 
-     // if (level == levelLimit) {   ///trying to catch the first edges to compare against the results bias?    !!!!!!
-        println(conceptPath);
-        print("EDGE: \t'" + results[i].finalName + "': \t");
-        if (results[i].parentEdgeStrings != null) {
-          for (int j = 0; j < results[i].parentEdgeStrings.length; j++) {
-            print(results[i].parentEdgeStrings[j] + ", ");
-          }
+      // if (level == levelLimit) {   ///trying to catch the first edges to compare against the results bias?    !!!!!!
+      println(conceptPath);
+      print("EDGE: \t'" + results[i].finalName + "': \t");
+      if (results[i].parentEdgeStrings != null) {
+        for (int j = 0; j < results[i].parentEdgeStrings.length; j++) {
+          print(results[i].parentEdgeStrings[j] + ", ");
         }
-        println();
-    //  }
+      }
+      println();
+      //  }
 
       //!!!!!!!!!!!
       //IF i want to include more successes, this 'already checked' situation is a little problematic...
@@ -162,12 +164,11 @@ public void recurseCheck(int level, String conceptPath) {
       level--;
       //println("subtracting level to " + level);
       for (int i = 0; i < results.length; i++) {
-        if (results[i].checked == false && results[i].finalPath.contains("c/en/")){// && results[i].success == false) {
+        if (results[i].checked == false && results[i].finalPath.contains("c/en/")) {// && results[i].success == false) {
           //println("calling recurse on " + results[i].finalPath + " at level " + level);
           recurseCheck(level, results[i].finalPath);
         }
       }
-      
     }
   }
 }
