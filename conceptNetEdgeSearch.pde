@@ -1,5 +1,5 @@
-final int edgeLimit = 10;
-final int levelLimit = 5;
+final int edgeLimit = 7;
+final int levelLimit = 7;
 final String path = "http://conceptnet5.media.mit.edu/data/5.2";
 
 final String REL_IS_A = "/r/IsA";
@@ -10,15 +10,12 @@ final String TARGET = "money";
 
 String[] alreadyChecked = new String[0];
 
-
-
 Edge[] edges;
 JSONObject json;
 
-
 int[] resultsTracker = new int[levelLimit];
-//String[] resultsTrackerString = new String[levelLimit];
-
+String[] resultsTrackerString = new String[levelLimit];
+String[] resultsTrackerRelString = new String[levelLimit];  // trying to record relation data to see if it semantically makes sense to me... breaking with a null pointer. 
 
 ArrayList<Edge> successEdges;
 
@@ -28,7 +25,7 @@ void setup() {
   frameRate(30);
   successEdges = new ArrayList<Edge>(); 
 
-  Edge[] personGroup = getPersonGroup(0, 10, 10);
+  Edge[] personGroup = getPersonGroup(0,0,1);
 
   int whichPerson = (int)random(personGroup.length);
   println("Chosen person is " + personGroup[whichPerson].finalName);
@@ -60,6 +57,18 @@ void setup() {
   //      println();
   //    }
   //  }
+
+
+  for (int i = 0; i < successEdges.size (); i++) {
+    Edge thisEdge = successEdges.get(i);
+    print("person - " + chosenStart + " - ");
+    for (int j = 0; j < thisEdge.parentEdgeStrings.length; j++) {
+      print(thisEdge.parentEdgeStrings[j] + " - ");
+      //print(thisEdge.parentEdgeRelStrings[j] + " ---> ");
+    }
+    print("money");
+    println();
+  }
 } 
 
 public void recurseCheck(int level, String conceptPath) { 
@@ -67,36 +76,51 @@ public void recurseCheck(int level, String conceptPath) {
   if (results != null) {
     for (int i = 0; i < results.length; i++) {
       int l = levelLimit - level;
+      //println("l:  " + l + ", i:  " + i);
       resultsTracker[l] = i;
+      resultsTrackerString[l] = results[i].finalName;
+      resultsTrackerRelString[l] = results[i].rel;
       results[i].updateParents();
 
-      print("RESULTS TRACKER:  ");
-      for (int j = 0; j < resultsTracker.length; j++) {
-        print(resultsTracker[j] + ",  ");
-      }
-      println();
+      //      print("RESULTS TRACKER:  ");
+      //      for (int j = 0; j < resultsTracker.length; j++) {
+      //        print(resultsTracker[j] + ",  ");
+      //      }
+      //      println();
 
-      print("EDGE: '" + results[i].finalName + "':  ");
-      if (results[i].parentEdges != null) {
-        for (int j = 0; j < results[i].parentEdges.length; j++) {
-          //Edge yetAnotherTempEdge = results[i];
-          //print(yetAnotherTempEdge.parentEdges[j] + ", ");
-          print(results[i].parentEdges[j] + ", ");
+
+
+      //      print("EDGE: \t'" + results[i].finalName + "': \t");
+      //      if (results[i].parentEdges != null) {
+      //        for (int j = 0; j < results[i].parentEdges.length; j++) {
+      //          print(results[i].parentEdges[j] + ", ");
+      //        }
+      //      }
+      //      println();
+
+     // if (level == levelLimit) {   ///trying to catch the first edges to compare against the results bias?    !!!!!!
+        println(conceptPath);
+        print("EDGE: \t'" + results[i].finalName + "': \t");
+        if (results[i].parentEdgeStrings != null) {
+          for (int j = 0; j < results[i].parentEdgeStrings.length; j++) {
+            print(results[i].parentEdgeStrings[j] + ", ");
+          }
         }
         println();
-      }
-
-
+    //  }
 
       //!!!!!!!!!!!
       //IF i want to include more successes, this 'already checked' situation is a little problematic...
       //!!!!!!!!!!!
       for (int j = 0; j < alreadyChecked.length; j++) {
-        if (alreadyChecked[j].equals(results[i].finalPath)) {
-          println("already checked " + results[i].finalPath);
+        if (alreadyChecked[j].equals(results[i].finalPath)) {// && !results[i].finalPath.contains(TARGET) && !results[i].finalPath.equals(results[i].finalPath) ) {  //MOVE SUCCESS CASES TO ANOTHER CHECK AND ANOTHER EDGE VARIABLE!!!!!
+          //println("already checked " + results[i].finalPath);     
           results[i].checked = true;
         }
-        if (results[i].finalPath.length() > 38) { //cull large concepts
+        if (results[i].finalPath.length() > 37) { //cull large concepts
+          results[i].checked = true;
+        }
+        if (results[i].finalName.equals("person")) { //don't match "person"
           results[i].checked = true;
         }
       }
@@ -104,36 +128,45 @@ public void recurseCheck(int level, String conceptPath) {
       if (results[i].checked == false && results[i].finalPath.contains("c/en/")) { 
         //println("checked false");
 
-        //add to already checked
-        String[] newChecked = new String[alreadyChecked.length+1];
-        for (int j = 0; j < alreadyChecked.length; j++) {
-          newChecked[j] = alreadyChecked[j];
-        }
-
-        newChecked[newChecked.length-1] = results[i].finalPath;
-        alreadyChecked = new String[newChecked.length];
-        alreadyChecked = newChecked;
-
         if (results[i].finalPath.contains(TARGET)) {
           //if (results[i].parentEdges.length == levelLimit) {   //IMPORTANT!!! last level only?
           Edge success = results[i];
           successEdges.add(success);
           //successEdges.add(results[i]);
           println("SUCCESS at " + results[i].finalName);
+          results[i].success = true;
           //}
         } else { 
-          println("not found at " + results[i].finalName);
+          //println("not found at " + results[i].finalName);
+        }
+
+        if (results[i].success == false) {  // don't add it to "already checked" if its a success node
+          //add to already checked
+          String[] newChecked = new String[alreadyChecked.length+1];
+          for (int j = 0; j < alreadyChecked.length; j++) {
+            newChecked[j] = alreadyChecked[j];
+          }
+
+          newChecked[newChecked.length-1] = results[i].finalPath;
+          alreadyChecked = new String[newChecked.length];
+          alreadyChecked = newChecked;
         }
       }
     }
 
     if (level > 1) {
+      if (level == levelLimit) {
+        println("it is the level start and there are " + results.length + " results");
+      }
       level--;
+      //println("subtracting level to " + level);
       for (int i = 0; i < results.length; i++) {
-        if (results[i].checked == false) {
+        if (results[i].checked == false && results[i].finalPath.contains("c/en/")){// && results[i].success == false) {
+          //println("calling recurse on " + results[i].finalPath + " at level " + level);
           recurseCheck(level, results[i].finalPath);
         }
       }
+      
     }
   }
 }
