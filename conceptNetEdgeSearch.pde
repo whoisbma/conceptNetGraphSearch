@@ -25,7 +25,7 @@ void setup() {
   frameRate(30);
   successEdges = new ArrayList<Edge>(); 
 
-  Edge[] personGroup = getPersonGroup(0,0,1);
+  Edge[] personGroup = getPersonGroup(0,10,100);
 
   int whichPerson = (int)random(personGroup.length);
   println("Chosen person is " + personGroup[whichPerson].finalName);
@@ -61,7 +61,7 @@ void setup() {
 
   for (int i = 0; i < successEdges.size (); i++) {
     Edge thisEdge = successEdges.get(i);
-    print("person - " + chosenStart + " - ");
+    print("person - ");
     for (int j = 0; j < thisEdge.parentEdgeStrings.length; j++) {
       print(thisEdge.parentEdgeStrings[j] + " - ");
       //print(thisEdge.parentEdgeRelStrings[j] + " ---> ");
@@ -76,9 +76,10 @@ public void recurseCheck(int level, String conceptPath) {
   if (results != null) {
     for (int i = 0; i < results.length; i++) {
       int l = levelLimit - level;
-      //println("l:  " + l + ", i:  " + i);
+      print("l:  " + l + ", i:  " + i + "\t");
       resultsTracker[l] = i;
-      resultsTrackerString[l] = results[i].finalName;
+      resultsTrackerString[l] = conceptPath;
+      //resultsTrackerString[l] = results[i].finalName;
       resultsTrackerRelString[l] = results[i].rel;
       results[i].updateParents();
 
